@@ -121,6 +121,9 @@ class House:
     self.nr_domu = canv.create_text(x, y, text = nr, font = font_text)
     self.figura = canv.create_text(x, y, font = font_figura, text = read_figura(self.txt), 
         justify='center')
+    self.figura2 = canv.create_text(x, y, 
+    # font = font_figura, text = read_figura(self.txt), 
+        justify='center')
     if rodzaj == 'l':
       y2 += bok
       x3 += (bok/2)
@@ -199,12 +202,17 @@ class House:
 #      self.canv.tag_raise(n.nr_domu)
     return p, i
 
-  def get_id(self,id):
+  def get_id(self,id, nr=0):
     self.id = id # id figury, np. 1, 15...
     self.txt = list_figures[self.id][1] # '1121'...
     self.name  = list_figures[self.id][0] # 'Puer'...
     self.planet = list_figures[self.id][2] # 'Jupiter'...
     self.canv.itemconfigure(self.figura,text=read_figura(self.txt))
+    if var_interpretacja.get():
+#      self.canv.itemconfigure(self.figura,text=self.name)
+#      self.canv.itemconfigure(self.figura,text=self.txt)
+      self.canv.itemconfigure(self.figura2,text= self.name + str(nr));
+
   def get_text(self):
      if self.id < 0: return ''
      return list_figures[self.id][1]
@@ -404,14 +412,14 @@ def houses_configure():
   ho = house_order.get()
   if ho == 'natural':
     for i in range(1,13):
-      houses[i].get_id(shields[i].id)
+      houses[i].get_id(shields[i].id, i)
   elif ho == 'GD':
     for i,j in (
       (1,10), (2,1), (3,4), (4,7), # znaki/domy kardynalne
       (5,11), (6,2), (7,5), (8,8), # stałe
       (9,12),  (10,3), (11,6),  (12,9)
      ):
-      houses[j].get_id(shields[i].id)
+      houses[j].get_id(shields[i].id, j)
   else: print ('error in houses configure')
   obliczanie_funkcji()
 
@@ -995,6 +1003,14 @@ for text, value in [('Naturalny', 'natural'), ('Golden Dawn', 'GD'),]:
     ).pack(side=LEFT,fill=X,expand=1)
 house_order.set('natural')
 
+frame = Frame(canv_mothers, bg=colour_mother); frame.pack(expand=1,fill=X,anchor='n')
+var_interpretacja= BooleanVar()
+Checkbutton(frame,text='Interpretacja', font = 40, indicatoron=0,
+	variable=var_interpretacja,
+	command = lambda: houses_configure(),
+  ).pack(anchor='w')
+
+
 # --------------------------------------------------- matki
 frame = Frame(canv_mothers); frame.pack()
 
@@ -1060,6 +1076,7 @@ var_tests_translacja = BooleanVar()
 var_tests_aspekty = BooleanVar()
 var_tests_company_houses = BooleanVar()
 var_tests_impedition = BooleanVar()
+
 
 f = Frame(canv_tests, bg = colour_analysis); f.pack(anchor=W)
 
